@@ -1,6 +1,18 @@
 import React from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
 
 function Navbar() {
+    const history = useNavigate();
+    const Logout = async () => {
+        try {
+            await axios.delete('http://localhost:8000/logout');
+
+            history('/')
+        } catch (error) {
+            console.log(error);
+        }
+    }
     return (
         <div>
             <nav className="block flex justify-between py-8 bg-black-500">
@@ -12,7 +24,7 @@ function Navbar() {
                 </div>
 
                 <div className="flex items-center space-x-2 pr-20">
-                    <button className="px-4 py-2 text-blue-100 bg-blue-800 rounded-md">
+                    <button onClick={Logout} className="px-4 py-2 text-blue-100 bg-blue-800 rounded-md">
                         Log out
                     </button>
                 </div>

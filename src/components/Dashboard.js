@@ -3,53 +3,40 @@ import axios from 'axios'
 import jwtDecode from 'jwt-decode'
 import { useNavigate } from 'react-router-dom'
 import Navbar from './Navbar'
+import { withCookies, Cookies , useCookies} from 'react-cookie';
 
 function Dashboard() {
     const history = useNavigate();
     const [name, setName] = useState('');
-    const [token, setToken] = useState('');
+    const [token, setToken] = useCookies(['access_token']);
     const [expired, setExpired] = useState('');
     const [users, setUsers] = useState([]);
+    // const [cookies, setCookie] = useCookies(['user']);
+
 
     // on mounted
     useEffect(() => {
-        refresh_token();
-        // getUsers();
-        // console.log(getUsers)
+        const decoded = jwtDecode(token.refresh_token);
+        setName(decoded.name);
     }, [])
-
-
-    const refresh_token = async () => {
-        try {
-            const response = await axios.get('http://localhost:8000/token');
-            setToken(response.data.access_token);
-            const decoded = jwtDecode(response.data.access_token);
-            // console.log(decoded.name);
-            setName(decoded.name);
-            setExpired(decoded.exp)
-        } catch (error) {
-            if (error.response) {
-                // kembali ke login
-                history('/');
-            }
-
-        }
-    }
 
     const axiosJwt = axios.create();
 
     axiosJwt.interceptors.request.use(async (config) => {
         const currentDate = new Date();
 
-        if (expired * 1000 < currentDate.getTime()) {
+        // if (expired * 1000 < currentDate.getTime()) {
             const response = await axios.get('http://localhost:8000/token');
-            config.headers.Authorization = `Bearer ${token}`;
+            // console.log(response.data.access_token)
+            // setCookie('access_token', response.data.access_token);
+            setToken('access_token',response.data.access_token);
+            config.headers.Authorization = `Bearer ${token.access_token}`;
 
-            setToken(response.data.access_token);
-            const decoded = jwtDecode(response.data.access_token);
-            setName(decoded.name);
-            setExpired(decoded.exp)
-        }
+            // setToken('access_token',response.data.access_token);
+            // const decoded = jwtDecode(response.data.access_token);
+            // setName(decoded.name);
+            // setExpired(decoded.exp)
+        // }
 
         return config;
     }, error => {
@@ -59,7 +46,7 @@ function Dashboard() {
     const getUsers = async () => {
         const response = await axiosJwt.get('http://localhost:8000/users', {
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token.access_token}`
             }
         });
 
@@ -84,6 +71,7 @@ function Dashboard() {
                                     className="inline-block px-3 py-2 font-semibold text-center text-white transition-colors duration-200 transform bg-blue-500 rounded-md hover:bg-blue-400">
                                     Get Users</button>
                             </div>
+                            <div></div>
                         </div>
                     </div>
                     <div className="flex items-center justify-center w-full mt-2 lg:h-96 lg:w-1/2">

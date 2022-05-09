@@ -1,11 +1,14 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { useCookies } from 'react-cookie';
+import jwtDecode from 'jwt-decode';
 
 function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [msg, setMsg] = useState('');
+    const [cookies, setCookie] = useCookies(['user']);
 
     const history = useNavigate();
 
@@ -13,10 +16,15 @@ function Login() {
         e.preventDefault();
 
         try {
-            await axios.post('http://localhost:8000/login', {
+            let login =  await axios.post('http://localhost:8000/login', {
                 email: email,
                 password: password,
             });
+            console.log(login.data.refresh_token);
+            setCookie('refresh_token', login.data.refresh_token)
+            setCookie('access_token', login.data.access_token)
+            console.log(jwtDecode(login.data.access_token).exp);
+            setCookie('expired_token', jwtDecode(login.data.access_token).exp);
             history('/dashboard')
         } catch (error) {
             if (error.response) {
@@ -32,12 +40,12 @@ function Login() {
                 <form onSubmit={Auth} action="">
                     <div className="mt-4">
                         <label className="block" htmlFor="email">Email</label>
-                        <input type="text" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
+                        <input type="text" required placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}
                             className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-sky-300" />
                     </div>
                     <div className="mt-4">
                         <label className="block" htmlFor="password">Password</label>
-                        <input type="password" placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)}
+                        <input type="password" required placeholder="********" value={password} onChange={(e) => setPassword(e.target.value)}
                             className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-sky-300" />
                     </div>
                     <div className="flex items-baseline justify-center">

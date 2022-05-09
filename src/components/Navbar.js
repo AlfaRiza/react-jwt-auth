@@ -1,13 +1,22 @@
 import React from 'react'
 import axios from 'axios'
 import { useNavigate } from 'react-router-dom'
+import { withCookies, Cookies , useCookies} from 'react-cookie';
+
 
 function Navbar() {
+    const [token, setToken] = useCookies(['refresh_token']);
     const history = useNavigate();
     const Logout = async () => {
         try {
-            await axios.delete('http://localhost:8000/logout');
-
+            await axios.delete('http://localhost:8000/logout', {
+                headers: {
+                    Authorization: `Bearer ${token.refresh_token}`
+                }
+            });
+            setToken('access_token','');
+            setToken('refresh_token','');
+            setToken('expired_token','');
             history('/')
         } catch (error) {
             console.log(error);

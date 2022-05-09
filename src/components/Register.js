@@ -41,17 +41,17 @@ function Register() {
                     </div>
                     <div className="mt-4">
                         <label className="block" htmlFor="email">Email</label>
-                        <input type="text" placeholder="Email"
+                        <input type="text" required placeholder="Email"
                             className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-sky-300" value={email} onChange={e => setEmail(e.target.value)} />
                     </div>
                     <div className="mt-4">
                         <label className="block" htmlFor="password">Password</label>
-                        <input type="password" placeholder="********"
+                        <input type="password" required placeholder="********"
                             className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-sky-300" value={password} onChange={e => setPassword(e.target.value)} />
                     </div>
                     <div className="mt-4">
                         <label className="block" htmlFor="confirm_password">Confirm Password</label>
-                        <input type="password" placeholder="********" id='confirm_password'
+                        <input type="password" required placeholder="********" id='confirm_password'
                             className="w-full px-4 py-2 mt-2 border rounded-md focus:outline-none focus:ring-1 focus:ring-sky-300" value={confirm_password} onChange={e => setConfirmPassword(e.target.value)} />
                     </div>
                     <div className="flex items-baseline justify-center">
